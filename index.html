@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Evaluación - Tecnología 4º ESO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+	<meta name="theme-color" content="#2c3e50">
+	<link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-light: #ecf0f1;
+            --text-dark: #333;
+            --card-bg: #ffffff;
+            --footer-bg: #1a252f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        header .legal {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* Contenedor Principal */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Tarjetas (Botones) */
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+            height: 300px; /* Altura fija para uniformidad */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Contenido visible de la tarjeta */
+        .card-content {
+            padding: 2rem;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .icon-container {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+
+        /* Capa superpuesta con el texto completo (Hover) */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 62, 80, 0.95); /* Fondo oscuro semitransparente */
+            color: white;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 2;
+        }
+
+        .card:hover .overlay {
+            opacity: 1;
+        }
+
+        .competencia-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            overflow-y: auto; /* Scroll si el texto es muy largo */
+        }
+        
+        .click-hint {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        /* Colores específicos para iconos por tarjeta para dar variedad */
+        .card:nth-child(1) .icon-container { color: #f39c12; } /* Creatividad */
+        .card:nth-child(2) .icon-container { color: #e74c3c; } /* Herramientas */
+        .card:nth-child(3) .icon-container { color: #9b59b6; } /* Comunicación */
+        .card:nth-child(4) .icon-container { color: #34495e; } /* Robótica */
+        .card:nth-child(5) .icon-container { color: #2ecc71; } /* Digital */
+        .card:nth-child(6) .icon-container { color: #16a085; } /* Sostenibilidad */
+
+        /* Footer */
+        footer {
+            background-color: var(--footer-bg);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .genially-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #ff5e57;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .genially-btn:hover {
+            background: #ff3b30;
+        }
+
+        .credits {
+            font-size: 0.9rem;
+            color: #95a5a6;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Evaluación de Competencias Específicas</h1>
+        <h2>Tecnología 4º ESO</h2>
+        <p class="legal">Basado en la Orden de 30 de mayo de 2023 (Andalucía)</p>
+    </header>
+
+    <main>
+        <div class="grid-container">
+            
+            <a href="CETEC41.html" class="card">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <h2 class="card-title">Ideación y Proyectos</h2>
+                    <span class="card-subtitle">C.E. TEC 4.1.</span>
+                </div>
+                <div class="overlay">
+                    <p class="competencia-text">Identificar y proponer problemas tecnológicos con iniciativa y creatividad, estudiando las necesidades de su entorno próximo y aplicando estrategias y procesos colaborativos e iterativos relativos a proyectos, para idear y planificar soluciones de manera eficiente, accesible, sostenible e innovadora.</p>
+                    <span class="click-hint">Clic para evaluar</span>
+                </div>
+            </a>
+
+            <a href="CETEC42.html" class="card">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <h2 class="card-title">Fabricación y Seguridad</h2>
+                    <span class="card-subtitle">C.E. TEC 4.2.</span>
+                </div>
+                <div class="overlay">
+                    <p class="competencia-text">Aplicar de forma apropiada y segura distintas técnicas y conocimientos interdisciplinares, utilizando procedimientos y recursos tecnológicos y analizando el ciclo de vida de productos para fabricar soluciones tecnológicas accesibles y sostenibles que den respuesta a necesidades planteadas.</p>
+                    <span class="click-hint">Clic para evaluar</span>
+                </div>
+            </a>
+
+            <a href="CETEC43.html" class="card">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <h2 class="card-title">Comunicación Técnica</h2>
+                    <span class="card-subtitle">C.E. TEC 4.3.</span>
+                </div>
+                <div class="overlay">
+                    <p class="competencia-text">Expresar, comunicar y difundir ideas, propuestas o soluciones tecnológicas en diferentes foros de manera efectiva, usando un lenguaje inclusivo y no sexista, empleando los recursos disponibles y aplicando los elementos y técnicas necesarias, para intercambiar la información de manera responsable y fomentar el trabajo en equipo.</p>
+                    <span class="click-hint">Clic para evaluar</span>
+                </div>
+            </a>
+
+            <a href="CETEC44.html" class="card">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <h2 class="card-title">Control y Robótica</h2>
+                    <span class="card-subtitle">C.E. TEC 4.4.</span>
+                </div>
+                <div class="overlay">
+                    <p class="competencia-text">Desarrollar soluciones automatizadas a problemas planteados, aplicando los conocimientos necesarios e incorporando tecnologías emergentes, para diseñar y construir sistemas de control programables y robóticos.</p>
+                    <span class="click-hint">Clic para evaluar</span>
+                </div>
+            </a>
+
+            <a href="CETEC45.html" class="card">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <h2 class="card-title">Herramientas Digitales</h2>
+                    <span class="card-subtitle">C.E. TEC 4.5.</span>
+                </div>
+                <div class="overlay">
+                    <p class="competencia-text">Aprovechar y emplear de manera responsable las posibilidades de las herramientas digitales, adaptándolas a sus necesidades, configurándolas y aplicando conocimientos interdisciplinares, para la resolución de tareas de una manera más eficiente.</p>
+                    <span class="click-hint">Clic para evaluar</span>
+                </div>
+            </a>
+
+            <a href="CETEC46.html" class="card">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <i class="fa-solid fa-earth-europe"></i>
+                    </div>
+                    <h2 class="card-title">Tecnología y Sociedad</h2>
+                    <span class="card-subtitle">C.E. TEC 4.6.</span>
+                </div>
+                <div class="overlay">
+                    <p class="competencia-text">Analizar procesos tecnológicos, teniendo en cuenta su impacto en la sociedad y el entorno, aplicando criterios de sostenibilidad y accesibilidad para hacer un uso ético y ecosocialmente responsable de la tecnología.</p>
+                    <span class="click-hint">Clic para evaluar</span>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <footer>
+        <a href="https://view.genially.com/674621a94ff77e8f8e06d3b4/guide-concreciones-curriculares" target="_blank" class="genially-btn">
+            <i class="fa-solid fa-book-open"></i> Ver Concreciones Curriculares
+        </a>
+        <p class="credits">Elaborado por Ángel Millán | Departamento de Tecnología del IES Virgen de Villadiego, de Peñaflor (Sevilla)</p>
+    </footer>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registrado con éxito:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Fallo al registrar el Service Worker:', error);
+                });
+        });
+    }
+</script>
+
+</body>
+</html>
