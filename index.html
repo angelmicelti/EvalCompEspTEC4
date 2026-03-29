@@ -3,7 +3,7 @@
 <head>
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Portal de Evaluación - Tecnología 4º ESO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
@@ -18,6 +18,10 @@
             --text-dark: #333;
             --card-bg: #ffffff;
             --footer-bg: #1a252f;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-area-left: env(safe-area-inset-left, 0px);
+            --safe-area-right: env(safe-area-inset-right, 0px);
         }
 
         * {
@@ -26,12 +30,21 @@
             padding: 0;
         }
 
+        html {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f4f7f6;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            min-height: -webkit-fill-available;
+            padding-top: var(--safe-area-top);
+            padding-bottom: var(--safe-area-bottom);
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Header */
@@ -39,22 +52,31 @@
             background: linear-gradient(135deg, #2c3e50, #4ca1af);
             color: white;
             padding: 2rem 1rem;
+            padding-left: calc(1rem + var(--safe-area-left));
+            padding-right: calc(1rem + var(--safe-area-right));
             text-align: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
             margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        header h2 {
+            font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+            font-weight: 300;
+            margin-bottom: 0.3rem;
         }
 
         header p {
-            font-size: 1.1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
             opacity: 0.9;
         }
 
         header .legal {
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
             margin-top: 5px;
             font-style: italic;
         }
@@ -64,14 +86,16 @@
             flex: 1;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem;
+            padding-left: calc(1.5rem + var(--safe-area-left));
+            padding-right: calc(1.5rem + var(--safe-area-right));
             width: 100%;
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+            gap: 1.5rem;
         }
 
         /* Tarjetas (Botones) */
@@ -81,7 +105,7 @@
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             position: relative;
-            height: 300px; /* Altura fija para uniformidad */
+            min-height: 250px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
             text-decoration: none;
@@ -95,9 +119,14 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
 
+        .card:active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
         /* Contenido visible de la tarjeta */
         .card-content {
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
             height: 100%;
             display: flex;
@@ -108,33 +137,33 @@
         }
 
         .icon-container {
-            font-size: 4rem;
+            font-size: clamp(2.5rem, 8vw, 4rem);
             margin-bottom: 1rem;
             color: var(--accent-color);
         }
 
         .card-title {
-            font-size: 1.5rem;
+            font-size: clamp(1.1rem, 3.5vw, 1.5rem);
             font-weight: 700;
             color: var(--primary-color);
             margin-bottom: 0.5rem;
         }
 
         .card-subtitle {
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
             color: #7f8c8d;
         }
 
-        /* Capa superpuesta con el texto completo (Hover) */
+        /* Capa superpuesta con el texto completo (Hover/Tap) */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(44, 62, 80, 0.95); /* Fondo oscuro semitransparente */
+            background: rgba(44, 62, 80, 0.95);
             color: white;
-            padding: 2rem;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -143,40 +172,75 @@
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
             z-index: 2;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .card:hover .overlay {
+        /* Desktop: hover shows overlay */
+        @media (hover: hover) and (pointer: fine) {
+            .card:hover .overlay {
+                opacity: 1;
+            }
+        }
+
+        /* Touch devices: tap toggles overlay via JS class */
+        .card.overlay-visible .overlay {
             opacity: 1;
         }
 
         .competencia-text {
-            font-size: 0.95rem;
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
             line-height: 1.5;
-            overflow-y: auto; /* Scroll si el texto es muy largo */
         }
         
         .click-hint {
             margin-top: 15px;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #3498db;
             font-weight: bold;
         }
 
-        /* Colores específicos para iconos por tarjeta para dar variedad */
-        .card:nth-child(1) .icon-container { color: #f39c12; } /* Creatividad */
-        .card:nth-child(2) .icon-container { color: #e74c3c; } /* Herramientas */
-        .card:nth-child(3) .icon-container { color: #9b59b6; } /* Comunicación */
-        .card:nth-child(4) .icon-container { color: #34495e; } /* Robótica */
-        .card:nth-child(5) .icon-container { color: #2ecc71; } /* Digital */
-        .card:nth-child(6) .icon-container { color: #16a085; } /* Sostenibilidad */
+        /* Hint for mobile users */
+        .tap-hint {
+            display: none;
+            font-size: 0.75rem;
+            color: #95a5a6;
+            margin-top: 0.5rem;
+        }
+
+        @media (hover: none) {
+            .tap-hint {
+                display: block;
+            }
+            .click-hint {
+                display: none;
+            }
+            .overlay .click-hint {
+                display: block;
+            }
+            .overlay .click-hint::after {
+                content: ' para abrir';
+            }
+        }
+
+        /* Colores específicos para iconos por tarjeta */
+        .card:nth-child(1) .icon-container { color: #f39c12; }
+        .card:nth-child(2) .icon-container { color: #e74c3c; }
+        .card:nth-child(3) .icon-container { color: #9b59b6; }
+        .card:nth-child(4) .icon-container { color: #34495e; }
+        .card:nth-child(5) .icon-container { color: #2ecc71; }
+        .card:nth-child(6) .icon-container { color: #16a085; }
 
         /* Footer */
         footer {
             background-color: var(--footer-bg);
             color: white;
             padding: 2rem;
+            padding-left: calc(2rem + var(--safe-area-left));
+            padding-right: calc(2rem + var(--safe-area-right));
+            padding-bottom: calc(2rem + var(--safe-area-bottom));
             text-align: center;
             margin-top: auto;
         }
@@ -193,21 +257,85 @@
             font-weight: bold;
             transition: background 0.3s;
             margin-bottom: 1rem;
+            min-height: 48px;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
         }
 
         .genially-btn:hover {
             background: #ff3b30;
         }
 
+        .genially-btn:active {
+            background: #e0352e;
+        }
+
         .credits {
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
             color: #95a5a6;
         }
 
         /* Media Queries */
         @media (max-width: 768px) {
-            header h1 { font-size: 1.8rem; }
-            .grid-container { grid-template-columns: 1fr; }
+            main {
+                padding: 1rem;
+                padding-left: calc(1rem + var(--safe-area-left));
+                padding-right: calc(1rem + var(--safe-area-right));
+            }
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .card {
+                min-height: 200px;
+            }
+            header {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-container {
+                gap: 0.75rem;
+            }
+            .card {
+                min-height: 180px;
+                border-radius: 12px;
+            }
+            .card-content {
+                padding: 1.2rem;
+            }
+            .overlay {
+                padding: 1.2rem;
+            }
+            header {
+                padding: 1.2rem 0.8rem;
+            }
+            footer {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        /* Landscape on mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .grid-container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            .card {
+                min-height: 180px;
+            }
+            header {
+                padding: 1rem;
+            }
+            header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Large screens */
+        @media (min-width: 1400px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
@@ -229,6 +357,7 @@
                     </div>
                     <h2 class="card-title">Ideación y Proyectos</h2>
                     <span class="card-subtitle">C.E. TEC 4.1.</span>
+                    <span class="tap-hint">Toca para ver descripción</span>
                 </div>
                 <div class="overlay">
                     <p class="competencia-text">Identificar y proponer problemas tecnológicos con iniciativa y creatividad, estudiando las necesidades de su entorno próximo y aplicando estrategias y procesos colaborativos e iterativos relativos a proyectos, para idear y planificar soluciones de manera eficiente, accesible, sostenible e innovadora.</p>
@@ -243,6 +372,7 @@
                     </div>
                     <h2 class="card-title">Fabricación y Seguridad</h2>
                     <span class="card-subtitle">C.E. TEC 4.2.</span>
+                    <span class="tap-hint">Toca para ver descripción</span>
                 </div>
                 <div class="overlay">
                     <p class="competencia-text">Aplicar de forma apropiada y segura distintas técnicas y conocimientos interdisciplinares, utilizando procedimientos y recursos tecnológicos y analizando el ciclo de vida de productos para fabricar soluciones tecnológicas accesibles y sostenibles que den respuesta a necesidades planteadas.</p>
@@ -257,6 +387,7 @@
                     </div>
                     <h2 class="card-title">Comunicación Técnica</h2>
                     <span class="card-subtitle">C.E. TEC 4.3.</span>
+                    <span class="tap-hint">Toca para ver descripción</span>
                 </div>
                 <div class="overlay">
                     <p class="competencia-text">Expresar, comunicar y difundir ideas, propuestas o soluciones tecnológicas en diferentes foros de manera efectiva, usando un lenguaje inclusivo y no sexista, empleando los recursos disponibles y aplicando los elementos y técnicas necesarias, para intercambiar la información de manera responsable y fomentar el trabajo en equipo.</p>
@@ -271,6 +402,7 @@
                     </div>
                     <h2 class="card-title">Control y Robótica</h2>
                     <span class="card-subtitle">C.E. TEC 4.4.</span>
+                    <span class="tap-hint">Toca para ver descripción</span>
                 </div>
                 <div class="overlay">
                     <p class="competencia-text">Desarrollar soluciones automatizadas a problemas planteados, aplicando los conocimientos necesarios e incorporando tecnologías emergentes, para diseñar y construir sistemas de control programables y robóticos.</p>
@@ -285,6 +417,7 @@
                     </div>
                     <h2 class="card-title">Herramientas Digitales</h2>
                     <span class="card-subtitle">C.E. TEC 4.5.</span>
+                    <span class="tap-hint">Toca para ver descripción</span>
                 </div>
                 <div class="overlay">
                     <p class="competencia-text">Aprovechar y emplear de manera responsable las posibilidades de las herramientas digitales, adaptándolas a sus necesidades, configurándolas y aplicando conocimientos interdisciplinares, para la resolución de tareas de una manera más eficiente.</p>
@@ -299,6 +432,7 @@
                     </div>
                     <h2 class="card-title">Tecnología y Sociedad</h2>
                     <span class="card-subtitle">C.E. TEC 4.6.</span>
+                    <span class="tap-hint">Toca para ver descripción</span>
                 </div>
                 <div class="overlay">
                     <p class="competencia-text">Analizar procesos tecnológicos, teniendo en cuenta su impacto en la sociedad y el entorno, aplicando criterios de sostenibilidad y accesibilidad para hacer un uso ético y ecosocialmente responsable de la tecnología.</p>
@@ -316,6 +450,40 @@
         <p class="credits">Elaborado por Ángel Millán | Departamento de Tecnología del IES Virgen de Villadiego, de Peñaflor (Sevilla)</p>
     </footer>
 <script>
+    // Touch-friendly overlay for mobile devices
+    document.addEventListener('DOMContentLoaded', function() {
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        
+        if (isTouchDevice) {
+            const cards = document.querySelectorAll('.card');
+            let lastTappedCard = null;
+            
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!this.classList.contains('overlay-visible')) {
+                        e.preventDefault();
+                        // Close any previously open overlay
+                        if (lastTappedCard && lastTappedCard !== this) {
+                            lastTappedCard.classList.remove('overlay-visible');
+                        }
+                        this.classList.add('overlay-visible');
+                        lastTappedCard = this;
+                    }
+                    // If overlay is visible, the second tap follows the link naturally
+                });
+            });
+
+            // Close overlay when tapping outside
+            document.addEventListener('click', function(e) {
+                if (lastTappedCard && !lastTappedCard.contains(e.target)) {
+                    lastTappedCard.classList.remove('overlay-visible');
+                    lastTappedCard = null;
+                }
+            });
+        }
+    });
+
+    // Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
