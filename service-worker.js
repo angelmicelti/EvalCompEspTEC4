@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eval-tec4-v1';
+const CACHE_NAME = 'eval-compesptec4-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
